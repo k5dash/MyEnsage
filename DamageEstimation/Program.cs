@@ -15,7 +15,7 @@ namespace SlarkAnnihilation
     internal static class Program
     {
         private static bool _loaded;
-        private static readonly Menu Menu = new Menu("Ember Annihilation", "ember", true);
+        private static readonly Menu Menu = new Menu("Ember Annihilation", "ember", true, "npc_dota_hero_ember", true);
         private static Hero _globalTarget;
         private static readonly List<string> Items = new List<string>
         {
@@ -36,7 +36,7 @@ namespace SlarkAnnihilation
             {
                 {Items[0],true},
                 {Items[1],true},
-                {Items[2],true},
+                {Items[2],false},
                 {Items[3],true},
                 {Items[4],true},
                 {Items[5],true}
@@ -134,6 +134,10 @@ namespace SlarkAnnihilation
         public static void useItem(Hero me, Hero target, float distance){
             if (Utils.SleepCheck("items"))
             {
+                /*foreach (var item in me.Inventory.Items)
+                {
+                    Game.PrintMessage(item.Name+": "+item.AbilityBehavior,MessageType.ChatMessage);
+                }*/
                 var items =
                     me.Inventory.Items.Where(
                         x =>
