@@ -25,8 +25,14 @@ namespace SlarkAnnihilation
             "item_aether_lens",
             "item_cyclone",
             "item_sheepstick",
-            "item_veil_of_discord"
+            "item_veil_of_discord",
+            "item_dagon_4",
+            "item_dagon_3",
+            "item_dagon_2",
+            "item_dagon_1"
         };
+        public static Dictionary<string, int>itemsInOrder = new Dictionary<string, int>();
+        private static Dictionary<Item,ItemSlot> ItemSlots = new Dictionary<Item,ItemSlot>();
 
         private static void Main()
         {
@@ -70,7 +76,7 @@ namespace SlarkAnnihilation
                 }
                 _loaded = true;
                 Game.PrintMessage(
-                    "<font face='Comic Sans MS, cursive'><font color='#00aaff'>" + Menu.DisplayName + " By Jumpering" +
+                    "<font face='Comic Sans MS, cursive'><font color='#00aaff'>" + Menu.DisplayName + " By k5dash" +
                     " loaded!</font> <font color='#aa0000'>v" + Assembly.GetExecutingAssembly().GetName().Version, MessageType.LogMessage);
             }
 
@@ -105,34 +111,46 @@ namespace SlarkAnnihilation
         }
 
         public static void GetItem(Hero me){
-            if (Utils.SleepCheck("dropitems"))
-            {   
-                    var forPick = ObjectMgr.GetEntities<PhysicalItem>().Where(
-                        x =>
-                            x.Distance2D(me.NetworkPosition) <= 250).ToList();
-                    foreach (var s in forPick)
-                    {
-                        me.PickUpItem(s);
-                    }
-                    Utils.Sleep(200, "dropitems");
-            }
-        }
-
-
-        public static void StashItem(Hero me){
             if (Utils.SleepCheck("pickitems"))
             {   
-                var items =
+                var droppedItems =
+                ObjectManager.GetEntities<PhysicalItem>().Where(x => x.Distance2D(me) < 250).Reverse().ToList();
+                foreach (var s in droppedItems)
+                {   
+                    me.PickUpItem(s, true); 
+                }      
+
+                var currentItemOrder =
                     me.Inventory.Items.Where(
                         x =>
                             (Items.Contains(x.Name) || x.Name.IndexOf("dagon")!=-1)&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(x.Name) &&
                             Utils.SleepCheck(x.Name)).ToList();
 
-                foreach (var item in items)
-                {
-                    me.DropItem(item, me.NetworkPosition, true);
+                foreach (var item in currentItemOrder){
+                    if(Items.Contains(item.Name) && ItemSlots.ContainsKey(item)){
+                        item.MoveItem(ItemSlots[item]);
+                    }
                 }
+                itemsInOrder = new Dictionary<string, int>();
+                ItemSlots = new Dictionary<Item,ItemSlot>();
                 Utils.Sleep(200, "pickitems");
+
+            }
+        }
+
+
+        public static void StashItem(Hero me){
+            if (Utils.SleepCheck("dropitems"))
+            {   
+                for (var i = 0; i < 6; i++) {
+                    var currentSlot = (ItemSlot) i;
+                    var currentItem = me.Inventory.GetItem(currentSlot);
+
+                    if (currentItem == null || !Items.Contains(currentItem.Name)) continue;
+                    ItemSlots.Add(currentItem,currentSlot);
+                    me.DropItem(currentItem, me.NetworkPosition, true);
+                }
+                Utils.Sleep(200, "dropitems");
             }
         }
     }
