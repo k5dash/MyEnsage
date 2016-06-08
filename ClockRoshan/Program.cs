@@ -112,10 +112,17 @@ namespace SlarkAnnihilation
             var pounce = me.Spellbook.SpellW;
             var rocket = me.Spellbook.SpellE;
             var shadowDance = me.Spellbook.SpellR;
-
-            me.Move(new Vector3(4290.717f,-2336,384));
+            me.Move(new Vector3(4064f,-2272,384));
             DelayAction.Add(
-            1500, 
+            2000, 
+            () =>
+                {
+                    me.Move(new Vector3(4290.717f,-2336,384));
+                });
+
+            
+            DelayAction.Add(
+            3500, 
             () =>
                 {
                     pounce.UseAbility();
